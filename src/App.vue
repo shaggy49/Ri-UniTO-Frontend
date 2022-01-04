@@ -69,7 +69,6 @@ export default {
 		doDisconnetti() {
 			console.log('uscito');
 			this.isLoggedIn = false;
-			//TODO --> collegarlo alla navbar con il prop disconnetti
 		},
 	},
 	components: {
