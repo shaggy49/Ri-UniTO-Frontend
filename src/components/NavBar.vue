@@ -11,6 +11,7 @@
                 aria-label="menu"
                 aria-expanded="false"
                 data-target="navbarBasicExample"
+                @click="showNavbar = !showNavbar"
             >       
                 <span aria-hidden="true"></span>
                 <span aria-hidden="true"></span>
@@ -18,7 +19,7 @@
             </a>
         </div>
 
-        <div id="navbarBasicExample" class="navbar-menu">
+        <div id="navbarBasicExample" class="navbar-menu"  :class="{ 'is-active': showNavbar }">
             <div class="navbar-end">
                 <router-link class="navbar-item center" :active-class='active' to="/prenota">
                     Prenota
@@ -75,6 +76,7 @@ export default {
     },
     data: function(){
         return{
+            showNavbar: false,
             testo: 'Accedi',
             active:'is-tab is-active'
         }

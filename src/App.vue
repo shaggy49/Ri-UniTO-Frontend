@@ -1,17 +1,19 @@
 <template>
+
 	<div id="app">
-		<div id="nav">
-			<NavBar
-				:autenticato="isLoggedIn"
-				:accesso="showLoginForm"
-				:disconnetti="doDisconnetti"
-			></NavBar>
-			<ModalAccesso
-				v-if="showLogin"
-				:caricamento="caricamento"
-				:toggle="toggleLoginForm"
-				v-on:accedi-cliccato="doAccedi"
-			></ModalAccesso>
+			<div id="nav">
+				<NavBar
+					:autenticato="isLoggedIn"
+					:accesso="showLoginForm"
+					:disconnetti="doDisconnetti"
+				></NavBar>
+				<ModalAccesso
+					v-if="showLogin"
+					:caricamento="caricamento"
+					:toggle="toggleLoginForm"
+					v-on:accedi-cliccato="doAccedi"
+					:loginResponse="loginResponse"
+				></ModalAccesso>
 		</div>
 
 		<router-view />
@@ -22,6 +24,7 @@
 import NavBar from "./components/NavBar";
 import ModalAccesso from "./components/ModalAccesso";
 import axios from "axios";
+const qs = require('qs');
 
 export default {
 	data() {
@@ -32,6 +35,7 @@ export default {
 			showLogin: true,
 			isLoggedIn: false,
 			caricamento: false,
+			loginResponse: ""
 		};
 	},
 	methods: {
@@ -42,25 +46,36 @@ export default {
 			this.showLogin = true;
 		},
 		doAccedi(payload) {
+
 			this.caricamento = true;
+
 			var self = this;
-			axios
-				.post("http://restapi.adequateshop.com/api/authaccount/login", {
-					email: payload.email,
-					password: payload.password,
-				})
+			axios.post(
+					process.env.VUE_APP_SERVER_ADDRESS + "/log-in",
+					qs.stringify({
+						email: payload.email,
+						password: payload.password
+					}),
+					{
+						headers: {	
+							'Content-Type': 'application/x-www-form-urlencoded'
+						}
+					}
+				)
 				.then(function (response) {
-					console.log(response.data.code, payload);
+					console.log(response);
 					if (response.status == 200) {
-						if (response.data.code == 1) {
+						if (response.data.includes('Ruolo') == 1) {
 							console.log("ok");
 							self.toggleLoginForm();
 							self.isLoggedIn = true;
-						} else console.log("username o password errati");
-					} else console.log("Server irraggiungibile");
+						} else
+							self.loginResponse = "username o password errati";
+					} else
+						self.loginResponse = "Server irraggiungibile";
 				})
 				.catch(function (error) {
-					console.log(error);
+					self.loginResponse = ""+error;
 				})
 				.finally(function () {
 					self.caricamento = false;

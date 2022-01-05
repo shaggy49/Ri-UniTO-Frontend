@@ -16,6 +16,7 @@
                 v-model="email"
                 type="email"
                 placeholder="e.g. email@esempio.com"
+				@change="clearWarns"
                 required
               />
             </div>
@@ -34,6 +35,9 @@
           </div>
           <h2 v-if="risultatoAccesso" class="subtitle has-text-danger">
             {{ risultatoAccesso }}
+          </h2>
+          <h2 v-if="loginResponse" class="subtitle has-text-danger">
+            {{ loginResponse }}
           </h2>
 
           <button
@@ -61,7 +65,7 @@
 <script>
 export default {
 	name: "ModalAccesso",
-	props: ["toggle", "caricamento"],
+	props: ["toggle", "caricamento","loginResponse"],
 	data: function () {
 		return {
 			email: "",
@@ -70,6 +74,9 @@ export default {
 		};
 	},
 	methods: {
+		clearWarns(){
+			this.risultatoAccesso = "";
+		},
 		validateEmail(email) {
 			return String(email)
 				.toLowerCase()
@@ -77,20 +84,27 @@ export default {
 					/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 				);
 		},
-		accedi() {
+		checkFields(){
 			if (!this.password && !this.email)
-				this.risultatoAccesso = "Campi vuoti"
+				return "Campi vuoti"
 			else if (!this.email)
-				this.risultatoAccesso = "Mail vuota";
+				return "Mail vuota";
 			else if (!this.password)
-				this.risultatoAccesso = "Password vuota"
+				return "Password vuota"
 			else if (this.validateEmail(this.email))
+				return;
+			else 
+				return "Email in formato errato";
+		},
+		accedi() {
+			var fieldsCheckResult = this.checkFields();
+			if (!fieldsCheckResult)
 				this.$emit("accedi-cliccato", {
 					email: this.email,
 					password: this.password,
 				});
 			else 
-				this.risultatoAccesso = "Email in formato errato";
+				this.risultatoAccesso = fieldsCheckResult;
 			//TODO implementare axios
 		},
 	},
