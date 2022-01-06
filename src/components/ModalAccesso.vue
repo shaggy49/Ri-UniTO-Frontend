@@ -98,6 +98,7 @@ export default {
 		},
 		accedi() {
 			var fieldsCheckResult = this.checkFields();
+      this.$cookies.set('babbo natale');
 			if (!fieldsCheckResult)
 				this.$emit("accedi-cliccato", {
 					email: this.email,
@@ -105,7 +106,6 @@ export default {
 				});
 			else 
 				this.risultatoAccesso = fieldsCheckResult;
-			//TODO implementare axios
 		},
 	},
 };

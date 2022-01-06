@@ -2,6 +2,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 import Prenota from '../views/Prenota'
+import Prenotazioni from '../views/Prenotazioni'
 
 Vue.use(VueRouter)
 
@@ -18,6 +19,11 @@ const routes = [
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     component: Prenota
+  },
+  {
+    path: '/prenotazioni',
+    name: 'Prenotazioni',
+    component: Prenotazioni
   }
 ]
 

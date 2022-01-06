@@ -16,7 +16,7 @@
 				></ModalAccesso>
 		</div>
 
-		<router-view />
+		<router-view :loginStatus="isLoggedIn" :accesso="showLoginForm"/>
 	</div>
 </template>
 
@@ -50,6 +50,7 @@ export default {
 			this.caricamento = true;
 
 			var self = this;
+			axios.defaults.withCredentials = true
 			axios.post(
 					process.env.VUE_APP_SERVER_ADDRESS + "/log-in",
 					qs.stringify({

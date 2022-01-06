@@ -1,11 +1,11 @@
 <template>
 	<div class="container pt-6">
 		<header>
-			<h1 class="title">Prenota</h1>
-			<h2 class="subtitle">Seleziona le materie a cui vuoi prenotarti</h2>
+			<h1 class="title">Prenotazioni</h1>
+			<h2 class="subtitle">Riepilogo delle tue prenotazioni</h2>
 		</header>
-		<div class="container pt-4">
-			<div class="card pt-5">
+		<div class="container pt-4" >
+			<div class="card pt-5" v-on:loginStatus:change="getReservationsAvailable">
 				<header class="has-text-centered">
 					<span class="icon-text is-vcentered is-size-4">
 						<span class="icon is-vcentered faarrows is-size-6" @click="changeDay(-1)">
@@ -22,7 +22,7 @@
 						</span>
 					</span>
 				</header>
-				<div class="card-content" v-if="parsed">
+				<div class="card-content" v-if="parsed && isLoggedIn" >
 					<div class="columns is-fixed-top"  v-for="(mat, index) in currentDaySubjects" :key="index">
 						<div class="column is-1 has-text-right has-text-centered-mobile">
 							<div class="mt-1">
@@ -36,36 +36,32 @@
 									v-for="elem in mat"
 									:key="elem.id"
 									:id="elem.id"
-									:editable="false"
+									:editable="true"
 									:materia="elem.course.title"
 									:professore="elem.teacher.name + ' ' + elem.teacher.surname"
 								/>
 							</div>
 						</div>
 					</div>
-					<!--row materie-->
-					<!-- <div class="columns">
-						<div
-							class="column is-1 is-one-fifth has-text-right has-text-centered-mobile"
-						>
-							<div class="mt-1">
-								<p>16-17</p>
-							</div>
-						</div>
-						<div class="column is-11">
-							<div class="columns is-desktop is-multiline">
-								<Subject
-									:id="5"
-									materia="Prog3"
-									professore="Mario Rossi2"
-								/>
-							</div>
-						</div>
-					</div> -->
 					<p class="mb-6"></p>
 				</div>
 				<div class="card-content" v-else>
-					<progress class="progress is-small is-primary mt-5" max="100">15%</progress>
+					<div v-if="loginStatus">
+						<progress class="progress is-small is-primary mt-5" max="100">15%</progress>
+					</div>
+					<div v-else>
+							<article class="message is-danger">
+								<div class="message-header">
+									<p>Attenzione!</p>
+								</div>
+								<div class="message-body">
+								Per accedere a questa pagina devi aver effettuato l'accesso. <br>Clicca il bottone "Accedi" per autenticarti.
+								</div>
+							</article>
+								<button class="button is-primary" @click="loginStatusChanged">Accedi</button>
+								<button class="button is-light ml-4">Torna alla home</button>
+					</div>
+					
 				</div>
 			</div>
 		</div>
@@ -77,13 +73,16 @@
 <script>
 import Subject from "../components/Subject";
 import axios from "axios";
-
+/* import { useCookies } from "vue-cookies";
+const { Cookies } = useCookies();
+ */
 export default {
 	data: function () {
 		return {
 			dayKey: 0,
 			parsed: false,
 			materie: [],
+			isLoggedIn: false,
 			materieFiltered: {
 			},
 			currentDaySubjects:[],
@@ -105,10 +104,24 @@ export default {
 			
 		};
 	},
+	props:['loginStatus', 'accesso'],
+	watch:{
+		loginStatus(val){
+			console.log(val);
+			if(val)
+				this.getReservationsAvailable();
+			else 
+				this.isLoggedIn = false;
+		}
+	},
 	mounted() {
 		this.getReservationsAvailable();
 	},
 	methods: {
+		loginStatusChanged(){
+			this.accesso();
+		},
+		
 		convertTimeKey(mat){
 			var convertedTime = '';
 			switch(mat){
@@ -130,21 +143,21 @@ export default {
 		getReservationsAvailable() {
 			var self = this;
 
-			axios
-				.get(
+			axios.get(
 					process.env.VUE_APP_SERVER_ADDRESS +
-						"/available-reservations"
+						"/user-reservations"
 				)
 				.then(function (response) {
-					
+					self.isLoggedIn = true;
 					console.log(response);
 					//TODO controllare il codice della response per vedere se parsare i dati o meno
 					self.materie=response.data;
 					self.filterSubjects();
 					
+					
 				})
-				.catch(function (error) {
-					self.loginResponse = "" + error;
+				.catch(function () {
+					self.isLoggedIn = false;
 				})
 				.finally(function () {
 					self.caricamento = false;
@@ -160,16 +173,17 @@ export default {
 			this.currentDaySubjects = this.materieFiltered[this.dayWeeks.short[this.dayKey]];
 		},
 		filterSubjects(){
+			console.log('ref');
 			var lun = [];
 			var mar = [];
 			var mer = [];
 			var gio = [];
 			var ven = [];
 			this.materie.forEach((elem) => {
-				console.log(elem.date);
+				console.log(elem.rDate);
 				/* if(elem.date=='lun')
 					this.materieFiltered.lun[0][this.materieFiltered.lun.length()-1] = elem; */
-				switch(elem.date){
+				switch(elem.rDate){
 					case 'lun':
 						lun.push(elem);
 						break;
@@ -204,7 +218,7 @@ export default {
 			var time18 = [];
 			for(const key in this.materieFiltered){
 				this.materieFiltered[key].forEach(elem => {
-					switch(elem.time){
+					switch(elem.rTime){
 						case '15':
 							time15.push(elem);
 							break;
@@ -239,10 +253,6 @@ export default {
 		testMateria() {
 			alert('');
 		},
-	},
-	props: {
-		giorno: String,
-		prenotazioni: Object,
 	},
 	components: {
 		Subject,
