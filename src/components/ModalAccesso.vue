@@ -98,7 +98,6 @@ export default {
 		},
 		accedi() {
 			var fieldsCheckResult = this.checkFields();
-      this.$cookies.set('babbo natale');
 			if (!fieldsCheckResult)
 				this.$emit("accedi-cliccato", {
 					email: this.email,

@@ -6,6 +6,7 @@
 					:autenticato="isLoggedIn"
 					:accesso="showLoginForm"
 					:disconnetti="doDisconnetti"
+					:role="role"
 				></NavBar>
 				<ModalAccesso
 					v-if="showLogin"
@@ -30,6 +31,7 @@ export default {
 	data() {
 		return {
 			pagina: 0,
+			role: '',
 			titolo_settore: "Pagina web",
 			message: "Hello Vue1!2",
 			showLogin: true,
@@ -66,7 +68,12 @@ export default {
 				.then(function (response) {
 					console.log(response);
 					if (response.status == 200) {
-						if (response.data.includes('Ruolo') == 1) {
+						if (response.data.role) {
+							if(response.data.role=='admin'){
+								self.role = 'admin';
+							}else{
+								self.role = 'user';
+							}
 							console.log("ok");
 							self.toggleLoginForm();
 							self.isLoggedIn = true;

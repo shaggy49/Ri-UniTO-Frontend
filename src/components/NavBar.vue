@@ -26,7 +26,7 @@
                 </router-link>
                 <router-link class="navbar-item center" :active-class='active' to="/prenotazioni"> Le tue prenotazioni </router-link>
             </div>
-            <div class="navbar-item has-dropdown is-hoverable">
+            <div class="navbar-item has-dropdown is-hoverable" v-if="role=='admin'">
                 <a class="navbar-link"> Admin tools </a>
 
                 <div class="navbar-dropdown">
@@ -58,7 +58,7 @@
 <script>
 export default {
     name: 'NavBar',
-    props:['accesso', 'autenticato', 'disconnetti'],
+    props:['accesso', 'autenticato', 'disconnetti', 'role'],
 
     methods:{
         testoBottoneAccesso (val){
