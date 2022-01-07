@@ -92,6 +92,7 @@ export default {
 		doDisconnetti() {
 			console.log('uscito');
 			this.isLoggedIn = false;
+			this.role = ''
 		},
 	},
 	components: {
