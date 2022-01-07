@@ -33,13 +33,13 @@ export default {
 			console.log(this.id)
 		},
 		prenota(){
-			//TODO implementare la funzione di prenotazione
+			this.$emit('pEffettuata', this.id);
 		},
 		confermaEsecuzione(){
-			//TODO implementare la funzione di conferma esecuzione della prenotazione
+			this.$emit('pEffettuata', this.id);
 		},
 		disdiciPrenotazione(){
-			//TODO implementare la funzione di disdetta della prenotazione
+			this.$emit('pDisdetta', this.id);
 		}
 	}
 
