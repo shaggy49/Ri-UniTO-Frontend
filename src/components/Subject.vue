@@ -9,8 +9,8 @@
 			</div>
 			<div v-if="editable" class="mt-4 has-text-right">
 				<!-- Inserire grafica modifiche -->
-				<button class="button is-success is-light mr-2">Effettuata</button>
-				<button class="button is-danger is-light ">Disdici</button>
+				<button @click="confermaEsecuzione" class="button is-success is-light mr-2">Effettuata</button>
+				<button @click="disdiciPrenotazione" class="button is-danger is-light ">Disdici</button>
 			</div>
 		</div>
 
@@ -23,6 +23,7 @@ export default {
 		id:Number,
 		materia:String,
 		professore:String,
+		orario:String,
 		editable:{
 			type:Boolean,
 			default:false
@@ -33,13 +34,21 @@ export default {
 			console.log(this.id)
 		},
 		prenota(){
-			this.$emit('pEffettuata', this.id);
+			this.$emit('pPrenota', this.id);
 		},
 		confermaEsecuzione(){
 			this.$emit('pEffettuata', this.id);
 		},
 		disdiciPrenotazione(){
-			this.$emit('pDisdetta', this.id);
+			this.$emit('pDisdetta', 
+			{
+				idPrenotazione: this.id, 
+				docente: this.professore,
+				orario: this.orario,
+				materia: this.materia,
+
+			}
+			);
 		}
 	}
 
