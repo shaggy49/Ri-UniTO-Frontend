@@ -23,10 +23,15 @@
 				>
 				</ion-icon>
 
-				<button class="button mt-4 is-primary is-fullwidth">
+				<button
+					class="button mt-4 is-primary is-fullwidth"
+					@click="btnPAction">
 					{{ btnPrimary }}
 				</button>
-				<button class="button mt-4 is-fullwidth" v-if="btnSecondary">
+				<button
+					class="button mt-4 is-fullwidth"
+					@click="btnSAction"
+					v-if="btnSecondary">
 					{{ btnSecondary }}
 				</button>
 			</div>
