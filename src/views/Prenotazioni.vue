@@ -20,7 +20,7 @@
 			:subtitle="esitoOperazione.subtitle"
 			:btnPrimary="esitoOperazione.btnPrimary"
 			:btnSecondary="esitoOperazione.btnSecondary"
-			:btnPAtion="clearOngoingAction"
+			:btnPAction="clearOngoingAction"
 			:btnCloseAction="clearOngoingAction"
 		/>
 		<header>
