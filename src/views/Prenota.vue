@@ -1,5 +1,21 @@
 <template>
 	<div class="container pt-6">
+		<ModalConferma
+			v-if="subjectPrenotating"
+			:payload="subjectPrenotating"
+			:confirmAction="axiosBookReservation"
+			:cancelAction="clearOngoingAction"
+		/>
+		<ModalGenerico
+			v-if="esitoOperazione"
+			:isSuccess="esitoOperazione.success"
+			:title="esitoOperazione.title"
+			:subtitle="esitoOperazione.subtitle"
+			:btnPrimary="esitoOperazione.btnPrimary"
+			:btnSecondary="esitoOperazione.btnSecondary"
+			:btnPAction="clearOngoingAction"
+			:btnCloseAction="clearOngoingAction"
+		/>
 		<header>
 			<h1 class="title">Prenota</h1>
 			<h2 class="subtitle">Seleziona le materie a cui vuoi prenotarti</h2>
@@ -32,36 +48,19 @@
 
 						<div class="column is-11">
 							<div class="columns is-mobile is-multiline">
-								<Subject @click="testMateria"
+								<Subject
 									v-for="elem in mat"
 									:key="elem.id"
 									:id="elem.id"
+									v-on:pPrenota="askReservation"
 									:editable="false"
 									:materia="elem.course.title"
+									:orario="convertTimeKey(index)"
 									:professore="elem.teacher.name + ' ' + elem.teacher.surname"
 								/>
 							</div>
 						</div>
 					</div>
-					<!--row materie-->
-					<!-- <div class="columns">
-						<div
-							class="column is-1 is-one-fifth has-text-right has-text-centered-mobile"
-						>
-							<div class="mt-1">
-								<p>16-17</p>
-							</div>
-						</div>
-						<div class="column is-11">
-							<div class="columns is-desktop is-multiline">
-								<Subject
-									:id="5"
-									materia="Prog3"
-									professore="Mario Rossi2"
-								/>
-							</div>
-						</div>
-					</div> -->
 					<p class="mb-6"></p>
 				</div>
 				<div class="card-content" v-else>
@@ -77,6 +76,8 @@
 <script>
 import Subject from "../components/Subject";
 import axios from "axios";
+import ModalConferma from '../components/ModalConferma.vue'
+import ModalGenerico from '../components/ModalGenerico.vue'
 
 export default {
 	data: function () {
@@ -101,7 +102,9 @@ export default {
 				'mercoledì',
 				'giovedì',
 				'venerdì'
-			]}
+			]},
+			esitoOperazione:null,
+			subjectPrenotating:null
 			
 		};
 	},
@@ -236,9 +239,73 @@ export default {
 			this.parsed = true;
 			this.currentDaySubjects = this.materieFiltered[this.dayWeeks.short[this.dayKey]];
 		},
-		testMateria() {
-			alert('');
+
+		axiosBookReservation(){
+			var self = this;
+			axios.defaults.withCredentials = true;
+			axios
+				.put(
+					process.env.VUE_APP_SERVER_ADDRESS +
+						"/available-reservations?idReservationAvailable="+self.subjectPrenotating.materia.idPrenotazione,
+
+					{
+						headers: {
+							"Content-Type": "application/x-www-form-urlencoded",
+						},
+					}
+				)
+				//TODO gestire gli errori e le conferme, deve comparire un popup che specifica l'esito dell'operazione
+				.then(function (response) {
+					console.log(response);
+					if (response.status == 200) {
+						self.esitoOperazione = {
+							success: true,
+							title: "Successo!",
+							subtitle: "Ripetizione prenotata con successo.",
+							btnPrimary: "Ok",
+						};
+					} else {
+						self.esitoOperazione = {
+							success: false,
+							title: "Errore!",
+							subtitle: "Server irraggiungibile",
+							btnPrimary: "Ok",
+						};
+					}
+				})
+				.catch(function (error) {
+					self.esitoOperazione = {
+						success: false,
+						title: "Errore!",
+						subtitle: error.response.data
+							? error.response.data
+							: "Undefined",
+						btnPrimary: "Ok",
+					};
+					//console.log(error.response.data);
+					//self.requestOperazione = "" + error;
+				})
+				.finally(function () {
+					//TODO scegliere se effettuare l'operazione di refresh anche in caso di fallimento
+					self.getReservationsAvailable();
+				});
 		},
+		askReservation(payload) {
+			this.subjectPrenotating= {
+				materia: {
+					idPrenotazione: payload.idPrenotazione,
+					docente: payload.docente,
+					orario: payload.orario,
+					materia: payload.materia,
+				},
+				actionTitle: "Prenota",
+				actionText: `Confermi di volerti prenotare?`,
+			};
+		},
+		clearOngoingAction(){
+			this.esitoOperazione=null;
+			this.subjectPrenotating=null;
+		}
 	},
 	props: {
 		giorno: String,
@@ -246,6 +313,8 @@ export default {
 	},
 	components: {
 		Subject,
+		ModalGenerico,
+		ModalConferma,
 	},
 };
 </script>
