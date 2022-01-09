@@ -7,7 +7,7 @@
 			:cancelAction="clearOngoingAction"
 		/>
 		<ModalConferma
-			v-if="subjectPrenotating"
+			v-if="subjectDone"
 			:materia="subjectDeleting"
 			:confirmAction="axiosDeleteReservation"
 			:actionTitle="Disiscrizione"
@@ -156,7 +156,7 @@ export default {
 			materieFiltered: {},
 			//?al click di conferma o disdici diventano oggetti con payload per visualizzare
 			//? la pagina di conferma
-			subjectPrenotating: null,
+			subjectDone: null,
 			subjectDeleting: null,
 			//?contiente le materie del giorno corrente -- daykey
 			currentDaySubjects: [],
@@ -197,12 +197,22 @@ export default {
 		this.getReservationsBooked();
 	},
 	methods: {
+
+
+
+
 		//?quando si preme annulla si resettano gli oggetti
 		//?serve anche per far scomparire il modal di conferma
 		clearOngoingAction() {
-			(this.subjectPrenotating = null), (this.subjectDeleting = null);
+			(this.subjectDone = null), (this.subjectDeleting = null);
 			this.esitoOperazione = null;
 		},
+
+
+
+		/*
+		 * cancellazione della prenotazione, chiamata axios al backend
+		 */
 		axiosDeleteReservation() {
 			var self = this;
 			axios.defaults.withCredentials = true;
@@ -251,6 +261,9 @@ export default {
 					self.getReservationsBooked();
 				});
 		},
+
+
+
 		/*
 		 * la funzione riceve dalla materia un emit con la richiesta di cancellazione della prentoazione
 		 * la difficoltà è che non abbiamo traccia di quale materia sia, potremmo ricercarla tra quelle scaricate
@@ -258,6 +271,8 @@ export default {
 		 * per questo si sceglie di creare della ridondanza.
 		 */
 		//? serve per generare il popup, viene chiamato da Subject quando si clicca disdici
+		//? -> risponde all'emit del listener
+
 		reservationCancelled(payload) {
 			this.subjectDeleting = {
 				materia: {
@@ -267,15 +282,26 @@ export default {
 					materia: payload.materia,
 				},
 				actionTitle: "Disiscrizione",
-				actionText: "disiscrivere",
+				actionText: "Confermi di volerti disiscrivere?",
 			};
 			//?la chiamata alla funzione è automatica grazie al v-if del ModalConferma
 			//? che esegue un controllo su subjectDeleting
 			//? che a sua volta, in caso di conferma, chiamerà axiosDeleteReservation
 		},
-		reservationDone(/* id */) {
-			//TODO COPAIRE IL TUTTO DA RESERVATION DELETED
-			//var self = this;
+
+
+		//? -> risponde all'emit del listener
+		reservationDone(payload) {
+			this.subjectDone = {
+				materia: {
+					idPrenotazione: payload.idPrenotazione,
+					docente: payload.docente,
+					orario: payload.orario,
+					materia: payload.materia,
+				},
+				actionTitle: "Completata",
+				actionText: "Confermi di aver completato la ripetizione?",
+			};
 		},
 
 		/*
@@ -328,6 +354,8 @@ export default {
 					self.caricamento = false;
 				});
 		},
+
+		
 		//cambia il girno nel calendario
 		changeDay(operation) {
 			if (operation == -1) {
