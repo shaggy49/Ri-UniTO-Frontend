@@ -4,7 +4,7 @@
         <div class="modal-content">
                 <div class="box has-text-centered mb-6 pt-5 pb-5 ">
                     <h1 class="title pt-5">{{payload.actionTitle}}</h1>
-                    <h2 class="subtitle pb-5">
+                    <h2 class="subtitle pb-5" style="white-space: pre-line">
                         {{payload.actionText}}
                     </h2>
                     <h3 class="title is-3 pt-3">{{payload.materia.materia}}</h3>
