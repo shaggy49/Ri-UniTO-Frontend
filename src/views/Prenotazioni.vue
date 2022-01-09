@@ -390,13 +390,16 @@ export default {
 				.get(process.env.VUE_APP_SERVER_ADDRESS + "/user-reservations")
 				.then(function (response) {
 					self.isLoggedIn = true;
-					console.log(response);
-
-					//TODO controllare il codice della response per vedere se parsare i dati o meno
 					self.materie = response.data;
 					self.filterSubjects();
 				})
 				.catch(function () {
+					self.esitoOperazione = {
+						success: false,
+						title: "Errore!",
+						subtitle: "Login error, riaccedi.",
+						btnPrimary: "Ok",
+					};
 					self.isLoggedIn = false;
 				})
 				.finally(function () {
