@@ -78,6 +78,7 @@
 									:id="elem.id"
 									:editable="true"
 									:materia="elem.course.title"
+									:statoPrenotazione="elem.status"
 									:professore="
 										elem.teacher.name +
 										' ' +
@@ -134,7 +135,7 @@
 <script>
 import Subject from "../components/Subject";
 import axios from "axios";
-import qs from "qs";
+//const qs = require("qs");
 import ModalConferma from "../components/ModalConferma.vue";
 import ModalGenerico from "../components/ModalGenerico.vue";
 /* import { useCookies } from "vue-cookies";
@@ -202,17 +203,14 @@ export default {
 			(this.subjectPrenotating = null), (this.subjectDeleting = null);
 			this.esitoOperazione = null;
 		},
-		axiosDeleteReservation(id) {
+		axiosDeleteReservation() {
 			var self = this;
 			axios.defaults.withCredentials = true;
 			axios
 				.put(
 					process.env.VUE_APP_SERVER_ADDRESS +
-						"/requested-reservations",
-					qs.stringify({
-						idRequestedReservation: id,
-						status: "deleted",
-					}),
+						'/requested-reservations?idRequestedReservation='+self.subjectDeleting.materia.idPrenotazione+'&status=deleted',
+
 					{
 						headers: {
 							"Content-Type": "application/x-www-form-urlencoded",
@@ -242,7 +240,7 @@ export default {
 					self.esitoOperazione = {
 						success: false,
 						title: "Errore!",
-						subtitle: error.response.data,
+						subtitle: error.response.data ? error.response.data : 'Undefined',
 						btnPrimary: "Ok",
 					};
 					//console.log(error.response.data);
@@ -263,7 +261,7 @@ export default {
 		reservationCancelled(payload) {
 			this.subjectDeleting = {
 				materia: {
-					idPrenotazione: payload.id,
+					idPrenotazione: payload.idPrenotazione,
 					docente: payload.docente,
 					orario: payload.orario,
 					materia: payload.materia,
