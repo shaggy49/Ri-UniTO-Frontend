@@ -1,9 +1,9 @@
 <template>
 	<div class="column" @click="test()">
-		<div class="box box-materia is-size-4">
+		<div class="box box-materia is-size-4 ">
 			
 			{{materia}}
-			<span v-if="editable" class="ml-2 has-text-right tag is-link">Prenotata</span>
+			<span v-if="editable" class="ml-2 has-text-right tag" v-bind:class="this.statusStyle()">{{this.statusText()}}</span>
 			<div class="box-materia-professore">
 				{{professore}}
 			</div>
@@ -24,6 +24,7 @@ export default {
 		materia:String,
 		professore:String,
 		orario:String,
+		statoPrenotazione: String,
 		editable:{
 			type:Boolean,
 			default:false
@@ -32,6 +33,31 @@ export default {
 	methods:{
 		test(){
 			console.log(this.id)
+		},
+		statusStyle(){
+			if(this.statoPrenotazione=='deleted'){
+				return 'is-warning';
+			}
+			else if(this.statoPrenotazione=='effettuata'){
+				return 'is-success';
+			}else{
+				return 'is-link';
+			}
+		},
+		statusText(){
+			var testo = '';
+			switch(this.statoPrenotazione){
+				case 'deleted':
+					testo='Disdetta';
+					break;
+				case 'effettuata':
+					testo = 'Effettuata';
+					break;
+				default:
+					testo='Prenotata';
+					break;
+			}
+			return testo;
 		},
 		prenota(){
 			this.$emit('pPrenota', this.id);
