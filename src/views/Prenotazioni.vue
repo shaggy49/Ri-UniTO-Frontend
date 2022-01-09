@@ -8,10 +8,9 @@
 		/>
 		<ModalConferma
 			v-if="subjectDone"
-			:materia="subjectDeleting"
-			:confirmAction="axiosDeleteReservation"
-			:actionTitle="Disiscrizione"
-			:actionText="disiscrivere"
+			:payload="subjectDone"
+			:confirmAction="axiosCompleteReservation"
+			:cancelAction="clearOngoingAction"
 		/>
 		<ModalGenerico
 			v-if="esitoOperazione"
@@ -197,18 +196,13 @@ export default {
 		this.getReservationsBooked();
 	},
 	methods: {
-
-
-
-
-		//?quando si preme annulla si resettano gli oggetti
-		//?serve anche per far scomparire il modal di conferma
+		//* quando si preme annulla si resettano gli oggetti
+		//* serve anche per far scomparire il modal di conferma
 		clearOngoingAction() {
-			(this.subjectDone = null), (this.subjectDeleting = null);
+			this.subjectDone = null;
+			this.subjectDeleting = null;
 			this.esitoOperazione = null;
 		},
-
-
 
 		/*
 		 * cancellazione della prenotazione, chiamata axios al backend
@@ -219,7 +213,9 @@ export default {
 			axios
 				.put(
 					process.env.VUE_APP_SERVER_ADDRESS +
-						'/requested-reservations?idRequestedReservation='+self.subjectDeleting.materia.idPrenotazione+'&status=deleted',
+						"/requested-reservations?idRequestedReservation=" +
+						self.subjectDeleting.materia.idPrenotazione +
+						"&status=deleted",
 
 					{
 						headers: {
@@ -234,7 +230,7 @@ export default {
 						self.esitoOperazione = {
 							success: true,
 							title: "Successo!",
-							subtitle: "Prenotazione cancellata con sucesso.",
+							subtitle: "Prenotazione cancellata con successo.",
 							btnPrimary: "Ok",
 						};
 					} else {
@@ -250,7 +246,9 @@ export default {
 					self.esitoOperazione = {
 						success: false,
 						title: "Errore!",
-						subtitle: error.response.data ? error.response.data : 'Undefined',
+						subtitle: error.response.data
+							? error.response.data
+							: "Undefined",
 						btnPrimary: "Ok",
 					};
 					//console.log(error.response.data);
@@ -261,8 +259,59 @@ export default {
 					self.getReservationsBooked();
 				});
 		},
+		axiosCompleteReservation() {
+			var self = this;
+			axios.defaults.withCredentials = true;
+			axios
+				.put(
+					process.env.VUE_APP_SERVER_ADDRESS +
+						"/requested-reservations?idRequestedReservation=" +
+						self.subjectDone.materia.idPrenotazione +
+						"&status=completed",
 
-
+					{
+						headers: {
+							"Content-Type": "application/x-www-form-urlencoded",
+						},
+					}
+				)
+				//TODO gestire gli errori e le conferme, deve comparire un popup che specifica l'esito dell'operazione
+				.then(function (response) {
+					console.log(response);
+					if (response.status == 200) {
+						self.esitoOperazione = {
+							success: true,
+							title: "Successo!",
+							subtitle:
+								"Prenotazione contrassegnata come completata.",
+							btnPrimary: "Ok",
+						};
+					} else {
+						self.esitoOperazione = {
+							success: false,
+							title: "Errore!",
+							subtitle: "Server irraggiungibile",
+							btnPrimary: "Ok",
+						};
+					}
+				})
+				.catch(function (error) {
+					self.esitoOperazione = {
+						success: false,
+						title: "Errore!",
+						subtitle: error.response.data
+							? error.response.data
+							: "Undefined",
+						btnPrimary: "Ok",
+					};
+					//console.log(error.response.data);
+					//self.requestOperazione = "" + error;
+				})
+				.finally(function () {
+					//TODO scegliere se effettuare l'operazione di refresh anche in caso di fallimento
+					self.getReservationsBooked();
+				});
+		},
 
 		/*
 		 * la funzione riceve dalla materia un emit con la richiesta di cancellazione della prentoazione
@@ -282,13 +331,13 @@ export default {
 					materia: payload.materia,
 				},
 				actionTitle: "Disiscrizione",
-				actionText: "Confermi di volerti disiscrivere?",
+				actionText: `Confermi di volerti disiscrivere? 
+				Questa operazione è irreversibile.`,
 			};
 			//?la chiamata alla funzione è automatica grazie al v-if del ModalConferma
 			//? che esegue un controllo su subjectDeleting
 			//? che a sua volta, in caso di conferma, chiamerà axiosDeleteReservation
 		},
-
 
 		//? -> risponde all'emit del listener
 		reservationDone(payload) {
@@ -342,7 +391,7 @@ export default {
 				.then(function (response) {
 					self.isLoggedIn = true;
 					console.log(response);
-					
+
 					//TODO controllare il codice della response per vedere se parsare i dati o meno
 					self.materie = response.data;
 					self.filterSubjects();
@@ -355,7 +404,6 @@ export default {
 				});
 		},
 
-		
 		//cambia il girno nel calendario
 		changeDay(operation) {
 			if (operation == -1) {
