@@ -349,7 +349,8 @@ export default {
 					materia: payload.materia,
 				},
 				actionTitle: "Completata",
-				actionText: "Confermi di aver completato la ripetizione?",
+				actionText: `Confermi di aver completato la ripetizione?
+				Questa operazione è irreversibile.`,
 			};
 		},
 
