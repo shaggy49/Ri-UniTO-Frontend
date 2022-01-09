@@ -1,5 +1,5 @@
 <template>
-	<div class="column" @click="test()">
+	<div class="column" @click="prenota()">
 		<div class="box box-materia is-size-4">
 			{{ materia }}
 			<span
@@ -72,7 +72,13 @@ export default {
 			return testo;
 		},
 		prenota() {
-			this.$emit("pPrenota", this.id);
+			if(!this.editable)
+				this.$emit("pPrenota", {
+				idPrenotazione: this.id,
+				docente: this.professore,
+				orario: this.orario,
+				materia: this.materia,
+			});
 		},
 		confermaEsecuzione() {
 			this.$emit("pEffettuata", {
