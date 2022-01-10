@@ -12,7 +12,7 @@
                         {{payload.materia.docente}}
                     </p>
                     <p >
-                        {{payload.materia.orario}}
+                        {{payload.materia.data + " "+ payload.materia.orario}}
                     </p>
                         <button @click="confirmAction" class="button mt-4 is-primary is-fullwidth">Conferma</button>
                         <button @click="cancelAction" class="button mt-4 is-fullwidth">

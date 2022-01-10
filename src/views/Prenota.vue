@@ -55,6 +55,7 @@
 									v-on:pPrenota="askReservation"
 									:editable="false"
 									:materia="elem.course.title"
+									:data="dayWeeks.extended[dayKey]"
 									:orario="convertTimeKey(index)"
 									:professore="elem.teacher.name + ' ' + elem.teacher.surname"
 								/>
@@ -295,6 +296,7 @@ export default {
 				materia: {
 					idPrenotazione: payload.idPrenotazione,
 					docente: payload.docente,
+					data: payload.data,
 					orario: payload.orario,
 					materia: payload.materia,
 				},

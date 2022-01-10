@@ -16,12 +16,14 @@
 				<button
 					@click="confermaEsecuzione"
 					class="button is-success is-light mr-2"
+					:disabled='isDisabled()'
 				>
 					Effettuata
 				</button>
 				<button
 					@click="disdiciPrenotazione"
 					class="button is-danger is-light"
+					:disabled='isDisabled()'
 				>
 					Disdici
 				</button>
@@ -37,6 +39,7 @@ export default {
 		materia: String,
 		professore: String,
 		orario: String,
+		data: String,
 		statoPrenotazione: String,
 		editable: {
 			type: Boolean,
@@ -78,6 +81,7 @@ export default {
 				docente: this.professore,
 				orario: this.orario,
 				materia: this.materia,
+				data: this.data
 			});
 		},
 		confermaEsecuzione() {
@@ -86,6 +90,7 @@ export default {
 				docente: this.professore,
 				orario: this.orario,
 				materia: this.materia,
+				data: this.data,
 			});
 		},
 		disdiciPrenotazione() {
@@ -94,8 +99,15 @@ export default {
 				docente: this.professore,
 				orario: this.orario,
 				materia: this.materia,
+				data: this.data,
 			});
 		},
+		isDisabled(){
+			if(this.statoPrenotazione == "deleted" || this.statoPrenotazione == "completed")
+				return true;
+			else 
+				return false;
+		}
 	},
 };
 </script>

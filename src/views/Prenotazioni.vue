@@ -84,6 +84,7 @@
 										elem.teacher.surname
 									"
 									:orario="convertTimeKey(index)"
+									:data="dayWeeks.extended[dayKey]"
 								/>
 							</div>
 						</div>
@@ -328,6 +329,7 @@ export default {
 					idPrenotazione: payload.idPrenotazione,
 					docente: payload.docente,
 					orario: payload.orario,
+					data: payload.data,
 					materia: payload.materia,
 				},
 				actionTitle: "Disiscrizione",
@@ -346,6 +348,7 @@ export default {
 					idPrenotazione: payload.idPrenotazione,
 					docente: payload.docente,
 					orario: payload.orario,
+					data: payload.data,
 					materia: payload.materia,
 				},
 				actionTitle: "Completata",
