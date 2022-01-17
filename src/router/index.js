@@ -3,6 +3,10 @@ import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 import Prenota from '../views/Prenota'
 import Prenotazioni from '../views/Prenotazioni'
+import GestioneInsegnanti from '../views/admin/GestioneInsegnanti'
+import GestioneCorsi from '../views/admin/GestioneCorsi'
+import GestionePrenotazioni from '../views/admin/GestionePrenotazioni'
+
 
 Vue.use(VueRouter)
 
@@ -24,6 +28,21 @@ const routes = [
     path: '/prenotazioni',
     name: 'Prenotazioni',
     component: Prenotazioni
+  },
+  {
+    path: '/admin/insegnanti',
+    name: 'insegnanti',
+    component: GestioneInsegnanti
+  },
+  {
+    path: '/admin/corsi',
+    name: 'corsi',
+    component: GestioneCorsi
+  },
+  {
+    path: '/admin/prenotazioni',
+    name: 'prenotazioni',
+    component: GestionePrenotazioni
   }
 ]
 

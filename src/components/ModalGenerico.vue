@@ -6,7 +6,7 @@
 				<h1 class="title pt-5">
 					{{ title }}
 				</h1>
-				<h2 class="subtitle pb-5" v-if="subtitle">
+				<h2 class="subtitle pb-5" style="white-space: pre-line" v-if="subtitle">
 					{{ subtitle }}
 				</h2>
 				<!-- <span class="material-icons md-48">face</span> -->
