@@ -106,31 +106,33 @@
 								<div class="tag is-danger is-light mb-2">
 									Tutti i campi sono obbligatori.
 								</div>
-								<div class="field">
-									<label class="label">Titolo</label>
-									<div class="control">
-										<input
-											class="input"
-											type="text"
-											placeholder="e.g Programmazione 3"
-											v-model="titoloCorso"
-										/>
+								<form @submit="checkFieldsAndAsk">
+									<div class="field">
+										<label class="label">Titolo</label>
+											<div class="control">
+												<input
+													class="input"
+													type="text"
+													placeholder="e.g Programmazione 3"
+													v-model="titoloCorso"
+													required
+												/>
+											</div>
 									</div>
-								</div>
-								<div>
-									<button
-										class="pt-3 button is-primary is-fullwidth"
-										@click="checkFieldsAndAsk()"
-									>
-										Aggiungi
-									</button>
-									<button
-										class="mt-3 button is-fullwidth"
-										@click="clearFields()"
-									>
-										Pulisci i campi
-									</button>
-								</div>
+									<div>
+										<button
+											class="pt-3 button is-primary is-fullwidth"
+										>
+											Aggiungi
+										</button>
+										<button
+											class="mt-3 button is-fullwidth"
+											@click="clearFields()"
+										>
+											Pulisci i campi
+										</button>
+									</div>
+								</form>
 							</div>
 						</div>
 					</div>
@@ -180,8 +182,15 @@ export default {
 			required: true,
 		},
 	},
+	watch: {
+		//?controllore per il cambiamento del prop loginStatus
+		loginStatus(val) {
+			if (val) this.getCorsi();
+		},
+	},
 	mounted() {
-		this.getCorsi();
+		if(this.loginStatus)
+			this.getCorsi();
 	},
 	data: function () {
 		return {

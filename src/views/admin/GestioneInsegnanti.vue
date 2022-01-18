@@ -114,6 +114,7 @@
 								<div class="tag is-danger is-light mb-2">
 									Tutti i campi sono obbligatori.
 								</div>
+								<form @submit="checkFieldAndAsk">
 								<div class="field">
 									<label class="label">Nome</label>
 									<div class="control">
@@ -122,6 +123,7 @@
 											type="text"
 											placeholder="e.g Mario"
 											v-model="nome"
+											required
 										/>
 									</div>
 								</div>
@@ -133,13 +135,14 @@
 											type="text"
 											placeholder="e.g Rossi"
 											v-model="cognome"
+											required
 										/>
 									</div>
 								</div>
 								<div>
 									<button
+									type="submit"
 										class="pt-3 button is-primary is-fullwidth"
-										@click="checkFieldAndAsk()"
 									>
 										Aggiungi
 									</button>
@@ -150,6 +153,7 @@
 										Pulisci i campi
 									</button>
 								</div>
+								</form>
 							</div>
 						</div>
 					</div>
@@ -215,13 +219,12 @@ export default {
 	watch: {
 		//?controllore per il cambiamento del prop loginStatus
 		loginStatus(val) {
-			console.log(val);
 			if (val) this.getInsegnanti();
-			else this.isLoggedIn = false;
 		},
 	},
 	mounted() {
-		this.getInsegnanti();
+		if(this.loginStatus)
+			this.getInsegnanti();
 	},
 	methods: {
 		clearOngoingAction() {
@@ -243,9 +246,9 @@ export default {
 
 		checkFieldAndAsk() {
 			var regex = /^([a-zA-Z])+(( ){1}[A-z]+)*$/;
-			if (regex.test(this.nome.trim())) {
+			if (this.nome!= null && regex.test(this.nome.trim())) {
 				this.insertInsegnanteConferma();
-				if (regex.test(this.cognome.trim())) {
+				if (this.nome!= null && regex.test(this.cognome.trim())) {
 					this.insertInsegnanteConferma();
 				} else {
 					this.esitoOperazione = {

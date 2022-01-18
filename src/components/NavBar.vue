@@ -1,10 +1,9 @@
 <template>
     <nav class="navbar" role="navigation" aria-label="main navigation">
         <div class="navbar-brand">
-            <a class="navbar-item is-primary is-active" href="#">
-                NomeApp
-            </a>
-
+            <router-link class="navbar-item is-primary is-active" to="/">
+            Ri-UniTO
+            </router-link>
             <a
                 role="button"
                 class="navbar-burger"
@@ -28,13 +27,10 @@
             </div>
             <div class="navbar-item has-dropdown is-hoverable" v-if="role=='admin'">
                 <a class="navbar-link"> Admin tools </a>
-
                 <div class="navbar-dropdown">
-                    <a class="navbar-item"> Ripetizioni </a>
-                    <a class="navbar-item"> Corsi </a>
-                    <a class="navbar-item"> Contact </a>
-                    <hr class="navbar-divider" />
-                    <a class="navbar-item"> Report an issue </a>
+                    <router-link class="navbar-item" to="/admin/insegnanti" >Insegnanti</router-link>
+                    <router-link class="navbar-item" to="/admin/corsi">Corsi</router-link>
+                    <router-link class="navbar-item" to="/admin/prenotazioni">Prenotazioni</router-link>
                 </div>
             </div>
 
@@ -72,7 +68,7 @@ export default {
                 this.disconnetti();
             else
                 this.accesso(); 
-        }
+        },
     },
     data: function(){
         return{

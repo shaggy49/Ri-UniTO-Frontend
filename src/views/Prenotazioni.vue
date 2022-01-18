@@ -32,25 +32,31 @@
 				v-on:loginStatus:change="getReservationsBooked"
 			>
 				<header class="has-text-centered">
-					<span class="icon-text is-vcentered is-size-4">
-						<span
-							class="icon is-vcentered faarrows is-size-6"
-							@click="changeDay(-1)"
-						>
-							<ion-icon name="chevron-back-outline"></ion-icon>
+					<div v-if="isLoggedIn">
+						<span class="icon-text is-vcentered is-size-4">
+							<span
+								class="icon is-vcentered faarrows is-size-6"
+								@click="changeDay(-1)"
+							>
+								<ion-icon
+									name="chevron-back-outline"
+								></ion-icon>
+							</span>
+							<span
+								><h1 class="mr-2 ml-2">
+									{{ dayWeeks.extended[dayKey] }}
+								</h1></span
+							>
+							<span
+								class="icon is-vcentered faarrows is-size-6"
+								@click="changeDay(1)"
+							>
+								<ion-icon
+									name="chevron-forward-outline"
+								></ion-icon>
+							</span>
 						</span>
-						<span
-							><h1 class="mr-2 ml-2">
-								{{ dayWeeks.extended[dayKey] }}
-							</h1></span
-						>
-						<span
-							class="icon is-vcentered faarrows is-size-6"
-							@click="changeDay(1)"
-						>
-							<ion-icon name="chevron-forward-outline"></ion-icon>
-						</span>
-					</span>
+					</div>
 				</header>
 				<div class="card-content" v-if="parsed && isLoggedIn">
 					<div
@@ -186,7 +192,7 @@ export default {
 	},
 	props: ["loginStatus", "accesso"],
 	watch: {
-		//?controllore per il cambaimento del prop loginStatus
+		//?controllore per il cambiamento del prop loginStatus
 		loginStatus(val) {
 			console.log(val);
 			if (val) this.getReservationsBooked();
@@ -194,7 +200,7 @@ export default {
 		},
 	},
 	mounted() {
-		this.getReservationsBooked();
+		if (this.loginStatus) this.getReservationsBooked();
 	},
 	methods: {
 		//* quando si preme annulla si resettano gli oggetti
@@ -244,14 +250,33 @@ export default {
 					}
 				})
 				.catch(function (error) {
-					self.esitoOperazione = {
-						success: false,
-						title: "Errore!",
-						subtitle: error.response.data
-							? error.response.data
-							: "Undefined",
-						btnPrimary: "Ok",
-					};
+				
+					//* bypassa l'errore dato da backend per eventuali ripetizioni aggiunte
+					if('data' in error.response){
+						if(error.response.data.includes('reservation_available_duplicate')){
+							self.esitoOperazione = {
+								success: true,
+								title: "Successo!",
+								subtitle: "Prenotazione cancellata con successo.",
+								btnPrimary: "Ok",
+							};
+						}else{
+							self.esitoOperazione = {
+								success: false,
+								title: "Errore!",
+								subtitle: error.response.data,
+								btnPrimary: "Ok",
+							};
+						}
+					}else{
+						self.esitoOperazione = {
+							success: false,
+							title: "Errore!",
+							subtitle: "Riprovare",
+							btnPrimary: "Ok",
+						};
+					}
+					
 					//console.log(error.response.data);
 					//self.requestOperazione = "" + error;
 				})
@@ -398,13 +423,15 @@ export default {
 					self.filterSubjects();
 				})
 				.catch(function () {
-					self.esitoOperazione = {
-						success: false,
-						title: "Errore!",
-						subtitle: "Login error, riaccedi.",
-						btnPrimary: "Ok",
-					};
-					self.isLoggedIn = false;
+					if (self.isLoggedIn) {
+						self.esitoOperazione = {
+							success: false,
+							title: "Errore!",
+							subtitle: "Login error, riaccedi.",
+							btnPrimary: "Ok",
+						};
+						self.isLoggedIn = false;
+					}
 				})
 				.finally(function () {
 					self.caricamento = false;

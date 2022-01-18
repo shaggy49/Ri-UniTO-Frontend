@@ -568,18 +568,22 @@ export default {
 	watch: {
 		//?controllore per il cambiamento del prop loginStatus
 		loginStatus(val) {
-			console.log(val);
-			if (val) this.axiosGetPrenotazioniDisponibili();
-			else this.isLoggedIn = false;
+			if (val) {
+				this.axiosBasicCalls();
+			}
 		},
 	},
 	mounted() {
-		this.axiosGetPrenotazioniDisponibili();
-		this.axiosGetBookingHistory();
-		this.getInsegnanti();
-		this.getMaterie();
+		if(this.loginStatus)
+			this.axiosBasicCalls();
 	},
 	methods: {
+		axiosBasicCalls(){
+			this.axiosGetPrenotazioniDisponibili();
+			this.axiosGetBookingHistory();
+			this.getInsegnanti();
+			this.getMaterie();
+		},
 		isNewReservationFormComplete() {
 			var noNullValues = true;
 			for (const element in this.newReservationPayload) {
@@ -888,14 +892,30 @@ export default {
 					}
 				})
 				.catch(function (error) {
-					self.esitoOperazione = {
-						success: false,
-						title: "Errore!",
-						subtitle: error.response.data
-							? error.response.data
-							: "Undefined",
-						btnPrimary: "Ok",
-					};
+					if('data' in error.response){
+						if(error.response.data.includes('reservation_available_duplicate')){
+							self.esitoOperazione = {
+								success: true,
+								title: "Successo!",
+								subtitle: "Ripetizione modificata.",
+								btnPrimary: "Ok",
+							};
+						}else{
+							self.esitoOperazione = {
+								success: false,
+								title: "Errore!",
+								subtitle: error.response.data,
+								btnPrimary: "Ok",
+							};
+						}
+					}else{
+						self.esitoOperazione = {
+							success: false,
+							title: "Errore!",
+							subtitle: "Riprovare",
+							btnPrimary: "Ok",
+						};
+					}
 					//console.log(error.response.data);
 					//self.requestOperazione = "" + error;
 				})
@@ -968,6 +988,10 @@ export default {
 								: "Undefined",
 						btnPrimary: "Ok",
 					};
+					if('data' in error.response){
+						if(error.response.data.includes('reservation_available_duplicate'))
+							self.esitoOperazione.subtitle = 'Prenotazione già disponibile';
+					}
 					//console.log(error.response.data);
 					//self.requestOperazione = "" + error;
 				})
