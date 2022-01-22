@@ -83,6 +83,10 @@ export default {
 				})
 				.catch(function (error) {
 					self.loginResponse = "" + error;
+					if('data' in error.response){
+						if(error.response.data.includes('Nessun account trovato'))
+							self.loginResponse = 'Username o password errati';
+					}
 				})
 				.finally(function () {
 					self.caricamento = false;
