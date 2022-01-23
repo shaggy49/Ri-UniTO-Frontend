@@ -502,7 +502,6 @@ export default {
 	props: {
 		loginStatus: {
 			required: true,
-			//TODO rimuovere, solo test
 			default: false,
 		},
 		accesso: {
@@ -517,14 +516,9 @@ export default {
 			availableCourses: null,
 			isDeletingAvailableBooking: false,
 			isAddingNewAvailableReservation: false,
-			deletingTeacherPayload: null,
 			modalNewAvailableReservationPayload: null,
-			nome: null,
-			cognome: null,
-			isInsertingTeacher: false,
 			bookingHistory: null,
 			hasRetriviedHistory: false,
-			availableCoursesFiltered: {},
 			dayWeeks: {
 				lun: "lunedì",
 				mar: "martedì",
@@ -614,15 +608,10 @@ export default {
 		clearOngoingAction() {
 			this.esitoOperazione = null;
 			this.isDeletingAvailableBooking = false;
-			this.deletingTeacherPayload = null;
-			this.isInsertingTeacher = false;
 			this.tutoringDeleting = null;
 			this.isAddingNewAvailableReservation = false;
 			this.bookingUserPayload = null;
 			this.bookingUser = false;
-		},
-		clearFields() {
-			(this.nome = null), (this.cognome = null);
 		},
 		goToHomePage() {
 			this.$router.push("/prenota");
@@ -631,35 +620,6 @@ export default {
 			this.accesso();
 		},
 
-		checkFieldAndAsk() {
-			var regex = /^([a-zA-Z])+(( ){1}[A-z]+)*$/;
-			if (regex.test(this.nome.trim())) {
-				this.insertInsegnanteConferma();
-				if (regex.test(this.cognome.trim())) {
-					this.insertInsegnanteConferma();
-				} else {
-					this.esitoOperazione = {
-						success: false,
-						title: "Errore!",
-						subtitle: `Formato cognome errato!
-                        Il cognome può contenere solo lettere.
-                        Separare più cognomi tramite uno spazio.
-                        `,
-						btnPrimary: "Ok",
-					};
-				}
-			} else {
-				this.esitoOperazione = {
-					success: false,
-					title: "Errore!",
-					subtitle: `Formato nome errato!
-					Il nome può contenere solo lettere.
-					Separare più nomi tramite uno spazio.
-					`,
-					btnPrimary: "Ok",
-				};
-			}
-		},
 
 		//* parte cancellazione prenotazione
 		axiosDeleteAvailableTutoring() {
@@ -676,7 +636,6 @@ export default {
 						},
 					}
 				)
-				//TODO gestire gli errori e le conferme, deve comparire un popup che specifica l'esito dell'operazione
 				.then(function (response) {
 					console.log("fff" + response.data);
 					if (response.status == 200) {
@@ -706,11 +665,8 @@ export default {
 								: "Undefined",
 						btnPrimary: "Ok",
 					};
-					//console.log(error.response.data);
-					//self.requestOperazione = "" + error;
 				})
 				.finally(function () {
-					//TODO scegliere se effettuare l'operazione di refresh anche in caso di fallimento
 					self.hasRetriviedBookingsAvailable = false;
 					self.axiosGetPrenotazioniDisponibili();
 				});
@@ -762,14 +718,8 @@ export default {
 				},
 			};
 			this.isAddingNewAvailableReservation = true;
-			/* 
-			+
-				self.newReservationPayload.professore
-				self.newReservationPayload.materia
-				self.date[self.newReservationPayload.giorno].value
-				self.orari[self.newReservationPayload.ora].value)
-			 */
 		},
+
 		axiosGetPrenotazioniDisponibili() {
 			this.hasRetriviedBookingsAvailable = false;
 			var self = this;
@@ -779,7 +729,6 @@ export default {
 					process.env.VUE_APP_SERVER_ADDRESS +
 						"/available-reservations"
 				)
-				//TODO gestire gli errori e le conferme, deve comparire un popup che specifica l'esito dell'operazione
 				.then(function (response) {
 					console.log(response);
 					if (response.status == 200) {
@@ -805,11 +754,8 @@ export default {
 								: "Undefined",
 						btnPrimary: "Ok",
 					};
-					//console.log(error.response.data);
-					//self.requestOperazione = "" + error;
 				})
 				.finally(function () {
-					//TODO scegliere se effettuare l'operazione di refresh anche in caso di fallimento
 				});
 		},
 
@@ -821,7 +767,6 @@ export default {
 					process.env.VUE_APP_SERVER_ADDRESS +
 						"/requested-reservations"
 				)
-				//TODO gestire gli errori e le conferme, deve comparire un popup che specifica l'esito dell'operazione
 				.then(function (response) {
 					console.log(response);
 					if (response.status == 200) {
@@ -847,11 +792,8 @@ export default {
 								: "Undefined",
 						btnPrimary: "Ok",
 					};
-					//console.log(error.response.data);
-					//self.requestOperazione = "" + error;
 				})
 				.finally(function () {
-					//TODO scegliere se effettuare l'operazione di refresh anche in caso di fallimento
 				});
 		},
 
@@ -872,7 +814,6 @@ export default {
 						},
 					}
 				)
-				//TODO gestire gli errori e le conferme, deve comparire un popup che specifica l'esito dell'operazione
 				.then(function (response) {
 					console.log(response);
 					if (response.status == 200) {
@@ -916,11 +857,8 @@ export default {
 							btnPrimary: "Ok",
 						};
 					}
-					//console.log(error.response.data);
-					//self.requestOperazione = "" + error;
 				})
 				.finally(function () {
-					//TODO scegliere se effettuare l'operazione di refresh anche in caso di fallimento
 					self.axiosGetBookingHistory();
 				});
 		},
@@ -957,7 +895,6 @@ export default {
 						},
 					}
 				)
-				//TODO gestire gli errori e le conferme, deve comparire un popup che specifica l'esito dell'operazione
 				.then(function (response) {
 					console.log("fff" + response.data);
 					if (response.status == 200) {
@@ -992,11 +929,8 @@ export default {
 						if(error.response.data.includes('reservation_available_duplicate'))
 							self.esitoOperazione.subtitle = 'Prenotazione già disponibile';
 					}
-					//console.log(error.response.data);
-					//self.requestOperazione = "" + error;
 				})
 				.finally(function () {
-					//TODO scegliere se effettuare l'operazione di refresh anche in caso di fallimento
 					self.hasRetriviedBookingsAvailable = false;
 					self.axiosGetPrenotazioniDisponibili();
 				});
@@ -1012,7 +946,6 @@ export default {
 						"Content-Type": "application/x-www-form-urlencoded",
 					},
 				})
-				//TODO gestire gli errori e le conferme, deve comparire un popup che specifica l'esito dell'operazione
 				.then(function (response) {
 					console.log(response);
 					if (response.status == 200) {
@@ -1042,11 +975,8 @@ export default {
 							: "Undefined",
 						btnPrimary: "Ok",
 					};
-					//console.log(error.response.data);
-					//self.requestOperazione = "" + error;
 				})
 				.finally(function () {
-					//TODO scegliere se effettuare l'operazione di refresh anche in caso di fallimento
 				});
 		},
 		getMaterie() {
@@ -1059,7 +989,6 @@ export default {
 						"Content-Type": "application/x-www-form-urlencoded",
 					},
 				})
-				//TODO gestire gli errori e le conferme, deve comparire un popup che specifica l'esito dell'operazione
 				.then(function (response) {
 					console.log(response);
 					if (response.status == 200) {
@@ -1088,11 +1017,8 @@ export default {
 							: "Undefined",
 						btnPrimary: "Ok",
 					};
-					//console.log(error.response.data);
-					//self.requestOperazione = "" + error;
 				})
 				.finally(function () {
-					//TODO scegliere se effettuare l'operazione di refresh anche in caso di fallimento
 				});
 		},
 		bookingUserClosed() {
@@ -1102,27 +1028,6 @@ export default {
 			this.bookingUser = false;
 		},
 		bookingForUser(prenotation) {
-			/* 			btnCloseAction,
-		payload: {
-			required: true,
-		},
-		hour: {
-			short,
-			long,
-		},
-		day: {
-			short,
-			long,
-		},
-		reservation: {
-			id,
-			name,
-		},
-		teacher: {
-			id,
-			name,
-			surname,
-		}, */
 			this.bookingUserPayload = {
 				hour: {
 					short: prenotation.time,
