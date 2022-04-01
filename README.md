@@ -1,4 +1,6 @@
-# hello-world
+# Ri-UniTO Frontend
+
+Frontend sviluppato utilizzando VueJs
 
 ## Project setup
 ```
