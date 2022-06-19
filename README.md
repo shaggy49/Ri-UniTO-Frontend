@@ -2,25 +2,5 @@
 
 Frontend sviluppato utilizzando VueJs
 
-## Project setup
-```
-npm install
-```
-
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
-
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+## More info
+La GUI sviluppata in questa repo richiama i servizi offerti dal seguente [backend](https://github.com/shaggyishere/Ri-UniTO). Si veda quest'ultimo per maggiori informazioni sui requisiti utente. 
